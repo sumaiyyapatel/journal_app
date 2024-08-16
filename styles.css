@@ -1,0 +1,96 @@
+/* styles.css */
+body {
+    font-size: .875rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-mode .card {
+    background-color: #444;
+    color: #fff;
+}
+
+.dark-mode .card-header {
+    background-color: #555;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+#content-area {
+    margin-top: 20px;
+}
+
+.card {
+    margin: 10px 0;
+    transition: box-shadow 0.3s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-header h4 {
+    display: flex;
+    align-items: center;
+}
+
+.card-header h4 i {
+    margin-right: 10px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.dark-mode .btn-outline-secondary {
+    color: #fff;
+    border-color: #fff;
+}
+
+.form-control, .form-select {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin: 10px -15px;
+    }
+}
