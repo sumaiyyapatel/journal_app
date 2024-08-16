@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focusing Timer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center mb-4">Focusing Timer</h1>
+    <div class="mb-4">
+        <div class="d-flex justify-content-center mb-2">
+            <input type="number" id="workTime" value="25" class="form-control text-center w-25">
+            <span class="align-self-center ms-2">Work Time (minutes)</span>
+        </div>
+        <div class="d-flex justify-content-center mb-2">
+            <input type="number" id="breakTime" value="5" class="form-control text-center w-25">
+            <span class="align-self-center ms-2">Break Time (minutes)</span>
+        </div>
+        <div class="d-flex justify-content-center mb-2">
+            <input type="number" id="rounds" value="4" class="form-control text-center w-25">
+            <span class="align-self-center ms-2">Rounds</span>
+        </div>
+    </div>
+    <div class="text-center mb-4">
+        <button id="startStopBtn" class="btn btn-success me-2">Start</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+    </div>
+    <div class="text-center mb-4">
+        <span id="timerLabel" class="h5">Work Time</span>
+    </div>
+    <div class="text-center mb-4 timer-display">
+        <span id="timeDisplay">25:00</span>
+    </div>
+    <div class="text-center">
+        <span id="roundDisplay" class="h5">Round 1 of 4</span>
+    </div>
+</div>
+
+<script>
+    let workTime = 25 * 60;
+    let breakTime = 5 * 60;
+    let rounds = 4;
+    let currentRound = 1;
+    let isRunning = false;
+    let isBreak = false;
+    let timeLeft = workTime;
+    let intervalId;
+
+    const startStopBtn = document.getElementById('startStopBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const workTimeInput = document.getElementById('workTime');
+    const breakTimeInput = document.getElementById('breakTime');
+    const roundsInput = document.getElementById('rounds');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const roundDisplay = document.getElementById('roundDisplay');
+    const timerLabel = document.getElementById('timerLabel');
+
+    const updateTimeDisplay = () => {
+        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const seconds = Math.floor(timeLeft % 60).toString().padStart(2, '0');
+        timeDisplay.textContent = `${minutes}:${seconds}`;
+    };
+
+    const updateRoundDisplay = () => {
+        roundDisplay.textContent = `Round ${currentRound} of ${rounds}`;
+    };
+
+    const handleStartStop = () => {
+        if (isRunning) {
+            clearInterval(intervalId);
+            startStopBtn.textContent = 'Start';
+            startStopBtn.classList.remove('btn-danger');
+            startStopBtn.classList.add('btn-success');
+        } else {
+            intervalId = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    if (!isBreak) {
+                        isBreak = true;
+                        timeLeft = breakTime;
+                        timerLabel.textContent = 'Break Time';
+                    } else {
+                        if (currentRound < rounds) {
+                            currentRound++;
+                            isBreak = false;
+                            timeLeft = workTime;
+                            timerLabel.textContent = 'Work Time';
+                        } else {
+                            clearInterval(intervalId);
+                            isRunning = false;
+                            currentRound = 1;
+                            timeLeft = workTime;
+                            timerLabel.textContent = 'Work Time';
+                            updateRoundDisplay();
+                            startStopBtn.textContent = 'Start';
+                            startStopBtn.classList.remove('btn-danger');
+                            startStopBtn.classList.add('btn-success');
+                            return;
+                        }
+                    }
+                    updateRoundDisplay();
+                }
+                updateTimeDisplay();
+            }, 1000);
+            startStopBtn.textContent = 'Stop';
+            startStopBtn.classList.remove('btn-success');
+            startStopBtn.classList.add('btn-danger');
+        }
+        isRunning = !isRunning;
+    };
+
+    const handleReset = () => {
+        clearInterval(intervalId);
+        isRunning = false;
+        isBreak = false;
+        currentRound = 1;
+        workTime = parseInt(workTimeInput.value) * 60;
+        breakTime = parseInt(breakTimeInput.value) * 60;
+        rounds = parseInt(roundsInput.value);
+        timeLeft = workTime;
+        updateTimeDisplay();
+        updateRoundDisplay();
+        timerLabel.textContent = 'Work Time';
+        startStopBtn.textContent = 'Start';
+        startStopBtn.classList.remove('btn-danger');
+        startStopBtn.classList.add('btn-success');
+    };
+
+    workTimeInput.addEventListener('change', () => {
+        workTime = parseInt(workTimeInput.value) * 60;
+        if (!isRunning) timeLeft = workTime;
+        updateTimeDisplay();
+    });
+
+    breakTimeInput.addEventListener('change', () => {
+        breakTime = parseInt(breakTimeInput.value) * 60;
+    });
+
+    roundsInput.addEventListener('change', () => {
+        rounds = parseInt(roundsInput.value);
+        updateRoundDisplay();
+    });
+
+    startStopBtn.addEventListener('click', handleStartStop);
+    resetBtn.addEventListener('click', handleReset);
+
+    updateTimeDisplay();
+    updateRoundDisplay();
+</script>
+
+</body>
+</html>

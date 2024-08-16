@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Hobbies Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .hobby-text.completed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center mb-4">Daily Hobbies Tracker</h1>
+    <ul id="hobbyList" class="list-group"></ul>
+    <input type="text" id="hobbyInput" placeholder="Add new hobby" class="form-control mt-4">
+    <button id="hobbyBtn" class="btn btn-primary w-100 mt-2">Add</button>
+</div>
+
+<script>
+    const initialHobbies = [
+        { id: 1, name: 'Reading', completed: false },
+        { id: 2, name: 'Running', completed: false },
+        { id: 3, name: 'Coding', completed: false },
+    ];
+
+    let hobbies = [...initialHobbies];
+    let editingHobby = null;
+
+    const hobbyList = document.getElementById('hobbyList');
+    const hobbyInput = document.getElementById('hobbyInput');
+    const hobbyBtn = document.getElementById('hobbyBtn');
+
+    function renderHobbies() {
+        hobbyList.innerHTML = '';
+        hobbies.forEach(hobby => {
+            const hobbyItem = document.createElement('li');
+            hobbyItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = hobby.completed;
+            checkbox.className = 'form-check-input me-2';
+            checkbox.addEventListener('change', () => toggleCompleted(hobby.id));
+            hobbyItem.appendChild(checkbox);
+
+            if (editingHobby && editingHobby.id === hobby.id) {
+                const editInput = document.createElement('input');
+                editInput.type = 'text';
+                editInput.value = hobbyInput.value;
+                editInput.className = 'form-control me-2';
+                editInput.addEventListener('input', (e) => hobbyInput.value = e.target.value);
+                hobbyItem.appendChild(editInput);
+            } else {
+                const hobbyText = document.createElement('span');
+                hobbyText.textContent = hobby.name;
+                hobbyText.className = `hobby-text${hobby.completed ? ' completed' : ''}`;
+                hobbyItem.appendChild(hobbyText);
+            }
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-sm btn-outline-secondary ms-2';
+            editBtn.textContent = 'Edit';
+            editBtn.addEventListener('click', () => handleEditHobby(hobby));
+            hobbyItem.appendChild(editBtn);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-sm btn-outline-danger ms-2';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', () => handleDeleteHobby(hobby.id));
+            hobbyItem.appendChild(deleteBtn);
+
+            hobbyList.appendChild(hobbyItem);
+        });
+
+        hobbyBtn.textContent = editingHobby ? 'Update' : 'Add';
+    }
+
+    function addOrUpdateHobby() {
+        const newHobbyName = hobbyInput.value.trim();
+        if (!newHobbyName) return alert('Hobby name cannot be empty.');
+
+        if (editingHobby) {
+            hobbies = hobbies.map(hobby =>
+                hobby.id === editingHobby.id ? { ...hobby, name: newHobbyName } : hobby
+            );
+            editingHobby = null;
+        } else {
+            hobbies.push({ id: hobbies.length + 1, name: newHobbyName, completed: false });
+        }
+
+        hobbyInput.value = '';
+        renderHobbies();
+    }
+
+    function toggleCompleted(hobbyId) {
+        hobbies = hobbies.map(hobby =>
+            hobby.id === hobbyId ? { ...hobby, completed: !hobby.completed } : hobby
+        );
+        renderHobbies();
+    }
+
+    function handleEditHobby(hobby) {
+        hobbyInput.value = hobby.name;
+        editingHobby = hobby;
+        renderHobbies();
+    }
+
+    function handleDeleteHobby(hobbyId) {
+        hobbies = hobbies.filter(hobby => hobby.id !== hobbyId);
+        if (editingHobby && editingHobby.id === hobbyId) {
+            editingHobby = null;
+            hobbyInput.value = '';
+        }
+        renderHobbies();
+    }
+
+    hobbyBtn.addEventListener('click', addOrUpdateHobby);
+    renderHobbies();
+</script>
+
+</body>
+</html>

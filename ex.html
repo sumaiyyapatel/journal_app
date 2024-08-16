@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Life Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; }
+        .section { display: none; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .active-section { display: block; }
+        .nav-pills .nav-link { color: #495057; }
+        .nav-pills .nav-link.active { background-color: #17a2b8; }
+        .completed { text-decoration: line-through; color: #6c757d; }
+        .achievement { background-color: #ffc107; color: #000; padding: 5px 10px; border-radius: 20px; font-size: 0.8em; margin-left: 10px; }
+        #motivationalQuote { font-style: italic; text-align: center; margin-bottom: 20px; }
+        .card { transition: transform 0.3s; }
+        .card:hover { transform: scale(1.03); }
+        #pomodoroTimer { font-size: 2em; text-align: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Student Life Planner</h1>
+        <div id="motivationalQuote"></div>
+        
+        <nav class="nav nav-pills nav-justified mb-4">
+            <a class="nav-link active" href="#" onclick="showSection('study')"><i class="fas fa-book"></i> Study</a>
+            <a class="nav-link" href="#" onclick="showSection('attendance')"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a class="nav-link" href="#" onclick="showSection('finance')"><i class="fas fa-wallet"></i> Finance</a>
+            <a class="nav-link" href="#" onclick="showSection('health')"><i class="fas fa-heartbeat"></i> Health</a>
+            <a class="nav-link" href="#" onclick="showSection('mood')"><i class="fas fa-smile"></i> Mood</a>
+            <a class="nav-link" href="#" onclick="showSection('todo')"><i class="fas fa-tasks"></i> To-Do</a>
+        </nav>
+
+        <!-- Study Section -->
+        <div id="studySection" class="section active-section">
+            <h2>Study Planner</h2>
+            <div id="pomodoroTimer">25:00</div>
+            <div class="text-center mb-3">
+                <button onclick="startPomodoro()" class="btn btn-primary">Start Pomodoro</button>
+                <button onclick="pausePomodoro()" class="btn btn-warning">Pause</button>
+                <button onclick="resetPomodoro()" class="btn btn-danger">Reset</button>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="studySubject" class="form-control" placeholder="Subject">
+                <input type="number" id="studyDuration" class="form-control mt-2" placeholder="Duration (minutes)">
+                <button onclick="addStudySession()" class="btn btn-success mt-2">Add Study Session</button>
+            </div>
+            <div id="studySessions"></div>
+        </div>
+
+        <!-- Attendance Section -->
+        <div id="attendanceSection" class="section">
+            <h2>Course Attendance Tracker</h2>
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" id="courseName" class="form-control" placeholder="Course Name">
+                    </div>
+                    <div class="col">
+                        <input type="number" id="totalSessions" class="form-control" placeholder="Total Sessions">
+                    </div>
+                    <div class="col">
+                        <button onclick="addCourse()" class="btn btn-primary">Add Course</button>
+                    </div>
+                </div>
+            </div>
+            <div id="coursesContainer" class="mb-4"></div>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <!-- Finance Section -->
+        <div id="financeSection" class="section">
+            <h2>Finance Tracker</h2>
+            <div id="financeSummary" class="mb-3"></div>
+            <form id="transactionForm" class="mb-3">
+                <input type="text" id="transactionName" class="form-control mb-2" placeholder="Transaction Name" required>
+                <input type="number" id="transactionAmount" class="form-control mb-2" placeholder="Amount" required>
+                <select id="transactionType" class="form-select mb-2">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Add Transaction</button>
+            </form>
+            <table id="transactionTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody"></tbody>
+            </table>
+            <canvas id="financeChart"></canvas>
+        </div>
+
+        <!-- Health Section -->
+        <div id="healthSection" class="section">
+            <h2>Health Tracker</h2>
+            <div class="d-flex justify-content-between mb-4">
+                <button onclick="showHealthSubsection('workouts')" class="btn btn-outline-primary">Workouts</button>
+                <button onclick="showHealthSubsection('water')" class="btn btn-outline-primary">Water Intake</button>
+                <button onclick="showHealthSubsection('sleep')" class="btn btn-outline-primary">Sleep</button>
+            </div>
+            <div id="workoutsSection">
+                <h3>Workouts</h3>
+                <input type="text" id="workoutType" class="form-control mb-2" placeholder="Workout Type">
+                <input type="number" id="workoutDuration" class="form-control mb-2" placeholder="Duration (minutes)">
+                <button onclick="addWorkout()" class="btn btn-success">Add Workout</button>
+                <div id="workoutList" class="mt-3"></div>
+            </div>
+            <div id="waterSection" class="d-none">
+                <h3>Water Intake</h3>
+                <input type="number" id="waterAmount" class="form-control mb-2" placeholder="Amount (ml)">
+                <button onclick="addWaterIntake()" class="btn btn-success">Add Water Intake</button>
+                <div id="waterList" class="mt-3"></div>
+            </div>
+            <div id="sleepSection" class="d-none">
+                <h3>Sleep</h3>
+                <input type="number" id="sleepHours" class="form-control mb-2" placeholder="Sleep Duration (hours)">
+                <button onclick="addSleep()" class="btn btn-success">Add Sleep</button>
+                <div id="sleepList" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- Mood Section -->
+        <div id="moodSection" class="section">
+            <h2>Mental Health Tracker</h2>
+            <div class="mb-3">
+                <label>How are you feeling today?</label>
+                <select id="moodSelect" class="form-select">
+                    <option value="😄">😄 Happy</option>
+                    <option value="😢">😢 Sad</option>
+                    <option value="😐">😐 Neutral</option>
+                    <option value="😰">😰 Anxious</option>
+                    <option value="😔">😔 Depressed</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Any additional notes?</label>
+                <textarea id="moodNotes" class="form-control"></textarea>
+            </div>
+            <button onclick="addMoodEntry()" class="btn btn-primary">Add Mood Entry</button>
+            <div id="moodEntries" class="mt-4"></div>
+            <canvas id="moodChart" class="mt-4"></canvas>
+        </div>
+
+        <!-- To-Do Section -->
+        <div id="todoSection" class="section">
+            <h2>To-Do List</h2>
+            <div class="mb-3">
+                <input type="text" id="taskInput" class="form-control" placeholder="New task">
+                <button onclick="addTask()" class="btn btn-primary mt-2">Add Task</button>
+            </div>
+            <ul id="taskList" class="list-group"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Motivational Quotes
+        const quotes = [
+            "The secret of getting ahead is getting started. - Mark Twain",
+            "It always seems impossible until it's done. - Nelson Mandela",
+            "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+            "Strive not to be a success, but rather to be of value. - Albert Einstein",
+            "The only way to do great work is to love what you do. - Steve Jobs"
+        ];
+
+        function showMotivationalQuote() {
+            const quoteElement = document.getElementById('motivationalQuote');
+            quoteElement.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        showMotivationalQuote();
+        setInterval(showMotivationalQuote, 60000); // Change quote every minute
+
+        // Pomodoro Timer
+        let pomodoroInterval;
+        let pomodoroTime = 1500; // 25 minutes in seconds
+
+        function startPomodoro() {
+            clearInterval(pomodoroInterval);
+            pomodoroInterval = setInterval(() => {
+                pomodoroTime--;
+                updatePomodoroDisplay();
+                if (pomodoroTime === 0) {
+                    clearInterval(pomodoroInterval);
+                    alert("Pomodoro session completed! Take a break.");
+                }
+            }, 1000);
+        }
+
+        function pausePomodoro() {
+            clearInterval(pomodoroInterval);
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomodoroInterval);
+            pomodoroTime = 1500;
+            updatePomodoroDisplay();
+        }
+
+        function updatePomodoroDisplay() {
+            const minutes = Math.floor(pomodoroTime / 60);
+            const seconds = pomodoroTime % 60;
+            document.getElementById('pomodoroTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Study Planner
+        function addStudySession() {
+            const subject = document.getElementById('studySubject').value;
+            const duration = document.getElementById('studyDuration').value;
+            if (subject && duration) {
+                const sessionElement = document.createElement('div');
+                sessionElement.className = 'card mb-2';
+                sessionElement.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${subject}</h5>
+                        <p class="card-text">Duration: ${duration} minutes</p>
+                        <button onclick="this.parentElement.parentElement.remove()" class="btn btn-sm btn-danger">Remove</button>
+                    </div>
+                `;
+                document.getElementById('studySessions').appendChild(sessionElement);
+                document.getElementById('studySubject').value = '';
+                document.getElementById('studyDuration').value = '';
+            }
+        }
+
+        // Attendance Tracker
+        let courses = [];
+
+        function addCourse() {
+            const name = document.getElementById('courseName').value;
+            const totalSessions = parseInt(document.getElementById('totalSessions').value);
+            if (name && totalSessions) {
+                courses.push({ name, totalSessions, attendedSessions: 0 });
+                updateCourseList();
+                updateAttendanceChart();
+            }
+        }
+
+        function updateCourseList() {
+            const container = document.getElementById('coursesContainer');
+            container.innerHTML = courses.map((course, index) => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">${course.name}</h5>
+                        <p>Attended: ${course.attendedSessions} / ${course.totalSessions}</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: ${(course.attendedSessions / course.totalSessions) * 100}%" 
+                                 aria-valuenow="${course.attendedSessions}" aria-valuemin="0" aria-valuemax="${course.totalSessions}"></div>
+                        </div>
+                        <button onclick="markAttendance(${index})" class="btn btn-sm btn-primary">Mark Attendance</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function markAttendance(index) {
+            if (courses[index].attendedSessions < courses[index].totalSessions) {
+                courses[index].attendedSessions++;
+                updateCourseList();
+                updateAttendanceChart();
+            }
+        }
+
+        function updateAttendanceChart() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: courses.map(course => course.name),
+                    datasets: [{
+                        label: 'Attendance',
+                        data: courses.map(course => (course.attendedSessions / course.totalSessions) * 100),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Finance Tracker
+        let transactions = [];
+        let transactionId = 1;
+
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addTransaction();
+        });
+
+        function addTransaction() {
+            const name = document.getElementById('transactionName').value;
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const type = document.getElementById('transactionType').value;
+            if (name && !isNaN(amount)) {
+                transactions.push({ id: transactionId++, name, amount, type });
+                updateFinanceTable();
+                updateFinanceChart();
+            }
+        }
+
+        function updateFinanceTable() {
+            const tbody = document.getElementById('transactionBody');
+            tbody.innerHTML = transactions.map(t => `
+                <tr>
+                    <td>${t.id}</td>
+                    <td>${t.name}</td>
+                    <td>$${t.amount.toFixed(2)}</td>
+                    <td>${t.type}</td>
+                    <td><button onclick="deleteTransaction(${t.id})" class="btn btn-sm btn-danger">Delete</button></td>
+                </tr>
+            `).join('');
+            updateFinanceSummary();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            updateFinanceTable();
+            updateFinanceChart();
+        }
+
+        function updateFinanceSummary() {
+            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expense;
+            document.getElementById('financeSummary').innerHTML = `
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Income</h5>
+                                <p class="card-text">$${income.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Expense</h5>
+                                <p class="card-text">$${expense.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ${balance >= 0 ? 'bg-info' : 'bg-warning'} text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Balance</h5>
+                                <p class="card-text">$${balance.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateFinanceChart() {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Income', 'Expense'],
+                    datasets: [{
+                        data: [
+                            transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0),
+                            transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
+                        ],
+                        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)']
+                    }]
+                }
+            });
+        }
+
+        // Health Tracker
+        let workouts = [];
+        let waterIntakes = [];
+        let sleepRecords = [];
+
+        function showHealthSubsection(subsection) {
+            ['workouts', 'water', 'sleep'].forEach(s => {
+                document.getElementById(s + 'Section').classList.toggle('d-none', s !== subsection);
+            });
+        }
+
+        function addWorkout() {
+            const type = document.getElementById('workoutType').value;
+            const duration = document.getElementById('workoutDuration').value;
+            if (type && duration) {
+                workouts.push({ type, duration, date: new Date() });
+                updateWorkoutList();
+                document.getElementById('workoutType').value = '';
+                document.getElementById('workoutDuration').value = '';
+            }
+        }
+
+        function updateWorkoutList() {
+            const list = document.getElementById('workoutList');
+            list.innerHTML = workouts.map(w => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">${w.type}</h5>
+                        <p class="card-text">Duration: ${w.duration} minutes</p>
+                        <p class="card-text"><small class="text-muted">${w.date.toLocaleString()}</small></p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addWaterIntake() {
+            const amount = document.getElementById('waterAmount').value;
+            if (amount) {
+                waterIntakes.push({ amount, date: new Date() });
+                updateWaterList();
+                document.getElementById('waterAmount').value = '';
+            }
+        }
+
+        function updateWaterList() {
+            const list = document.getElementById('waterList');
+            list.innerHTML = waterIntakes.map(w => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">${w.amount} ml</h5>
+                        <p class="card-text"><small class="text-muted">${w.date.toLocaleString()}</small></p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addSleep() {
+            const hours = document.getElementById('sleepHours').value;
+            if (hours) {
+                sleepRecords.push({ hours, date: new Date() });
+                updateSleepList();
+                document.getElementById('sleepHours').value = '';
+            }
+        }
+
+        function updateSleepList() {
+            const list = document.getElementById('sleepList');
+            list.innerHTML = sleepRecords.map(s => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">${s.hours} hours</h5>
+                        <p class="card-text"><small class="text-muted">${s.date.toLocaleString()}</small></p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Mood Tracker
+        let moodEntries = [];
+
+        function addMoodEntry() {
+            const mood = document.getElementById('moodSelect').value;
+            const notes = document.getElementById('moodNotes').value;
+            const date = new Date();
+            moodEntries.push({ mood, notes, date });
+            updateMoodEntries();
+            updateMoodChart();
+            document.getElementById('moodNotes').value = '';
+        }
+
+        function updateMoodEntries() {
+            const entriesContainer = document.getElementById('moodEntries');
+            entriesContainer.innerHTML = moodEntries.map(entry => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">${entry.mood}</h5>
+                        <p class="card-text">${entry.notes}</p>
+                        <p class="card-text"><small class="text-muted">${entry.date.toLocaleString()}</small></p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateMoodChart() {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            const moodCounts = moodEntries.reduce((acc, entry) => {
+                acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(moodCounts),
+                    datasets: [{
+                        data: Object.values(moodCounts),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    }]
+                }
+            });
+        }
+
+        // To-Do List
+        let tasks = [];
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            if (taskInput.value) {
+                tasks.push({ text: taskInput.value, completed: false });
+                updateTaskList();
+                taskInput.value = '';
+            }
+        }
+
+        function updateTaskList() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = tasks.map((task, index) => `
+                <li class="list-group-item ${task.completed ? 'completed' : ''}">
+                    ${task.text}
+                    <button onclick="completeTask(${index})" class="btn btn-sm btn-success float-end ms-2">Complete</button>
+                    <button onclick="deleteTask(${index})" class="btn btn-sm btn-danger float-end">Delete</button>
+                </li>
+            `).join('');
+        }
+
+        function completeTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            updateTaskList();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            updateTaskList();
+        }
+
+        // Function to switch between sections
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active-section'));
+            document.getElementById(sectionName + 'Section').classList.add('active-section');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Initialize the app
+        updateCourseList();
+        updateFinanceTable();
+        updateWorkoutList();
+        updateWaterList();
+        updateSleepList();
+        updateMoodEntries();
+        updateTaskList();
+    </script>
+</body>
+</html>

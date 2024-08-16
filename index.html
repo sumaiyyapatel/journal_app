@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness & Productivity App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Wellness & Productivity App</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="#" onclick="showSection('attendance')">Attendance</a>
+                <a class="nav-link" href="#" onclick="showSection('finance')">Finance</a>
+                <a class="nav-link" href="#" onclick="showSection('focus')">Focus</a>
+                <a class="nav-link" href="#" onclick="showSection('health')">Health</a>
+                <a class="nav-link" href="#" onclick="showSection('mood')">Mood</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Attendance Tracker -->
+        <div id="attendance" class="section">
+            <h2 class="text-center mb-4">Course Attendance Tracker</h2>
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col">
+                        <button class="btn btn-primary" onclick="addCourse()">Add Course</button>
+                    </div>
+                </div>
+            </div>
+            <div id="coursesContainer" class="mb-4"></div>
+            <button class="btn btn-secondary" onclick="visualizeData()">Visualize Data</button>
+        </div>
+
+        <!-- Finance Manager -->
+        <div id="finance" class="section">
+            <h2 class="text-center mb-4">Finance Manager</h2>
+            <div id="app">
+                <!-- Finance content will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Focus Timer -->
+        <div id="focus" class="section">
+            <h2 class="text-center mb-4">Focusing Timer</h2>
+            <div class="mb-4">
+                <div class="d-flex justify-content-center mb-2">
+                    <input type="number" id="workTime" value="25" min="1" class="form-control w-25">
+                    <label for="workTime" class="align-self-center ms-2">Work Time (minutes)</label>
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                    <input type="number" id="breakTime" value="5" min="1" class="form-control w-25">
+                    <label for="breakTime" class="align-self-center ms-2">Break Time (minutes)</label>
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                    <input type="number" id="rounds" value="4" min="1" class="form-control w-25">
+                    <label for="rounds" class="align-self-center ms-2">Rounds</label>
+                </div>
+            </div>
+            <div class="text-center mb-4">
+                <button id="startButton" class="btn btn-primary" onclick="startTimer()">Start</button>
+                <button id="resetButton" class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+            </div>
+            <div class="text-center mb-4">
+                <h5 id="timerLabel">Work Time</h5>
+            </div>
+            <div class="text-center mb-4 timer-display">
+                <h1 id="timeDisplay">25:00</h1>
+            </div>
+            <div class="text-center">
+                <h5 id="roundDisplay">Round 1 of 4</h5>
+            </div>
+        </div>
+
+        <!-- Health Tracker -->
+        <div id="health" class="section">
+            <h2 class="text-center mb-4">Health Tracker</h2>
+            <div class="d-flex justify-content-between mb-4">
+                <button class="btn btn-primary" onclick="showHealthSection('workouts')">Workouts</button>
+                <button class="btn btn-primary" onclick="showHealthSection('water')">Water Intake</button>
+                <button class="btn btn-primary" onclick="showHealthSection('sleep')">Sleep</button>
+            </div>
+            <div id="workoutsSection">
+                <h3 class="mb-3">Workouts</h3>
+                <button class="btn btn-secondary" onclick="addWorkout()">Add Workout</button>
+            </div>
+            <div id="waterSection" class="d-none">
+                <h3 class="mb-3">Water Intake</h3>
+                <button class="btn btn-secondary" onclick="addWaterIntake()">Add Water Intake</button>
+            </div>
+            <div id="sleepSection" class="d-none">
+                <h3 class="mb-3">Sleep</h3>
+                <button class="btn btn-secondary" onclick="addSleep()">Add Sleep</button>
+            </div>
+        </div>
+
+        <!-- Mood Tracker -->
+        <div id="mood" class="section">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Mental Health Tracker</h2>
+                    <div class="mb-3">
+                        <label for="moodSelect" class="form-label">How are you feeling today? Select a mood</label>
+                        <select id="moodSelect" class="form-select">
+                            <option value="Happy">Happy</option>
+                            <option value="Sad">Sad</option>
+                            <option value="Neutral">Neutral</option>
+                            <option value="Anxious">Anxious</option>
+                            <option value="Depressed">Depressed</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moodNotes" class="form-label">Any additional notes?</label>
+                        <textarea id="moodNotes" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="addMoodEntry()">Add Mood Entry</button>
+                </div>
+            </div>
+            <div class="card mt-4 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center">Mood Entries</h3>
+                    <div id="moodEntries"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Attendance Tracker
+        function addCourse() {
+            // Implementation for adding a course
+        }
+
+        function visualizeData() {
+            // Implementation for visualizing attendance data
+        }
+
+        // Finance Manager
+        document.addEventListener("DOMContentLoaded", function () {
+            const transactions = [
+                { id: 1, name: 'Salary', amount: 5000, type: 'income' },
+                { id: 2, name: 'Rent', amount: 2000, type: 'expense' },
+                { id: 3, name: 'Groceries', amount: 500, type: 'expense' },
+            ];
+            let transactionId = transactions.length + 1;
+
+            const app = document.getElementById('app');
+            // ... (rest of the finance manager implementation)
+        });
+
+        // Focus Timer
+        let timer;
+        let timeLeft;
+        let currentRound = 1;
+        let isWorking = true;
+
+        function startTimer() {
+            // Implementation for starting the timer
+        }
+
+        function resetTimer() {
+            // Implementation for resetting the timer
+        }
+
+        // Health Tracker
+        function showHealthSection(section) {
+            document.querySelectorAll('#health > div').forEach(div => div.classList.add('d-none'));
+            document.getElementById(section + 'Section').classList.remove('d-none');
+        }
+
+        function addWorkout() {
+            // Implementation for adding a workout
+        }
+
+        function addWaterIntake() {
+            // Implementation for adding water intake
+        }
+
+        function addSleep() {
+            // Implementation for adding sleep data
+        }
+
+        // Mood Tracker
+        function addMoodEntry() {
+            const mood = document.getElementById('moodSelect').value;
+            const notes = document.getElementById('moodNotes').value;
+            const entry = document.createElement('div');
+            entry.innerHTML = `<p><strong>${mood}</strong>: ${notes}</p>`;
+            document.getElementById('moodEntries').prepend(entry);
+        }
+
+        // Show the attendance section by default
+        showSection('attendance');
+    </script>
+</body>
+</html>

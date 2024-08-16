@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Health Tracker</h1>
+        <div class="d-flex justify-content-between mb-4">
+            <button id="workoutsTab" class="btn btn-primary">Workouts</button>
+            <button id="waterTab" class="btn btn-secondary">Water Intake</button>
+            <button id="sleepTab" class="btn btn-secondary">Sleep</button>
+        </div>
+
+        <!-- Workouts Section -->
+        <div id="workoutsSection">
+            <h2 class="mb-3">Workouts</h2>
+            <button id="addWorkoutBtn" class="btn btn-success mb-3">Add Workout</button>
+            <ul id="workoutsList" class="list-group"></ul>
+        </div>
+
+        <!-- Water Intake Section -->
+        <div id="waterSection" class="d-none">
+            <h2 class="mb-3">Water Intake</h2>
+            <button id="addWaterIntakeBtn" class="btn btn-success mb-3">Add Water Intake</button>
+            <ul id="waterIntakeList" class="list-group"></ul>
+        </div>
+
+        <!-- Sleep Section -->
+        <div id="sleepSection" class="d-none">
+            <h2 class="mb-3">Sleep</h2>
+            <button id="addSleepBtn" class="btn btn-success mb-3">Add Sleep</button>
+            <ul id="sleepList" class="list-group"></ul>
+        </div>
+    </div>
+
+    <script>
+        let workouts = [
+            { id: 1, name: 'Running', calories: 500, duration: 30 },
+            { id: 2, name: 'Weightlifting', calories: 300, duration: 45 }
+        ];
+
+        let waterIntake = [
+            { id: 1, amount: 1000 }
+        ];
+
+        let sleep = [
+            { id: 1, duration: 8 }
+        ];
+
+        let activeTab = 'workouts';
+
+        const workoutsTab = document.getElementById('workoutsTab');
+        const waterTab = document.getElementById('waterTab');
+        const sleepTab = document.getElementById('sleepTab');
+        const workoutsSection = document.getElementById('workoutsSection');
+        const waterSection = document.getElementById('waterSection');
+        const sleepSection = document.getElementById('sleepSection');
+        const workoutsList = document.getElementById('workoutsList');
+        const waterIntakeList = document.getElementById('waterIntakeList');
+        const sleepList = document.getElementById('sleepList');
+
+        const switchTab = (tab) => {
+            activeTab = tab;
+            workoutsTab.classList.toggle('btn-primary', tab === 'workouts');
+            workoutsTab.classList.toggle('btn-secondary', tab !== 'workouts');
+            waterTab.classList.toggle('btn-primary', tab === 'water');
+            waterTab.classList.toggle('btn-secondary', tab !== 'water');
+            sleepTab.classList.toggle('btn-primary', tab === 'sleep');
+            sleepTab.classList.toggle('btn-secondary', tab !== 'sleep');
+
+            workoutsSection.classList.toggle('d-none', tab !== 'workouts');
+            waterSection.classList.toggle('d-none', tab !== 'water');
+            sleepSection.classList.toggle('d-none', tab !== 'sleep');
+        };
+
+        const renderWorkouts = () => {
+            workoutsList.innerHTML = '';
+            workouts.forEach((workout) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = workout.name;
+                nameInput.className = 'form-control mb-2';
+                nameInput.onchange = (e) => {
+                    workout.name = e.target.value;
+                };
+
+                const caloriesInput = document.createElement('input');
+                caloriesInput.type = 'number';
+                caloriesInput.value = workout.calories;
+                caloriesInput.className = 'form-control mb-2';
+                caloriesInput.onchange = (e) => {
+                    workout.calories = parseInt(e.target.value, 10);
+                };
+
+                const durationInput = document.createElement('input');
+                durationInput.type = 'number';
+                durationInput.value = workout.duration;
+                durationInput.className = 'form-control mb-2';
+                durationInput.onchange = (e) => {
+                    workout.duration = parseInt(e.target.value, 10);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    workouts = workouts.filter((w) => w.id !== workout.id);
+                    renderWorkouts();
+                };
+
+                li.append(nameInput, caloriesInput, durationInput, deleteBtn);
+                workoutsList.appendChild(li);
+            });
+        };
+
+        const renderWaterIntake = () => {
+            waterIntakeList.innerHTML = '';
+            waterIntake.forEach((intake) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+
+                const amountInput = document.createElement('input');
+                amountInput.type = 'number';
+                amountInput.value = intake.amount;
+                amountInput.className = 'form-control mb-2';
+                amountInput.onchange = (e) => {
+                    intake.amount = parseInt(e.target.value, 10);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    waterIntake = waterIntake.filter((w) => w.id !== intake.id);
+                    renderWaterIntake();
+                };
+
+                li.append(amountInput, deleteBtn);
+                waterIntakeList.appendChild(li);
+            });
+        };
+
+        const renderSleep = () => {
+            sleepList.innerHTML = '';
+            sleep.forEach((s) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+
+                const durationInput = document.createElement('input');
+                durationInput.type = 'number';
+                durationInput.value = s.duration;
+                durationInput.className = 'form-control mb-2';
+                durationInput.onchange = (e) => {
+                    s.duration = parseInt(e.target.value, 10);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    sleep = sleep.filter((sl) => sl.id !== s.id);
+                    renderSleep();
+                };
+
+                li.append(durationInput, deleteBtn);
+                sleepList.appendChild(li);
+            });
+        };
+
+        document.getElementById('addWorkoutBtn').onclick = () => {
+            workouts.push({ id: workouts.length + 1, name: '', calories: 0, duration: 0 });
+            renderWorkouts();
+        };
+
+        document.getElementById('addWaterIntakeBtn').onclick = () => {
+            waterIntake.push({ id: waterIntake.length + 1, amount: 0 });
+            renderWaterIntake();
+        };
+
+        document.getElementById('addSleepBtn').onclick = () => {
+            sleep.push({ id: sleep.length + 1, duration: 0 });
+            renderSleep();
+        };
+
+        workoutsTab.onclick = () => switchTab('workouts');
+        waterTab.onclick = () => switchTab('water');
+        sleepTab.onclick = () => switchTab('sleep');
+
+        renderWorkouts();
+        renderWaterIntake();
+        renderSleep();
+    </script>
+</body>
+</html>

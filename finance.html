@@ -1,0 +1,107 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const transactions = [
+        { id: 1, name: 'Salary', amount: 5000, type: 'income' },
+        { id: 2, name: 'Rent', amount: 2000, type: 'expense' },
+        { id: 3, name: 'Groceries', amount: 500, type: 'expense' },
+    ];
+
+    let transactionId = transactions.length + 1;
+
+    const app = document.getElementById('app');
+    const transactionTable = document.createElement('table');
+    transactionTable.className = 'table table-bordered';
+    const tableHeader = `
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="transactionBody">
+        </tbody>
+    `;
+    transactionTable.innerHTML = tableHeader;
+    app.appendChild(transactionTable);
+
+    const updateTable = () => {
+        const transactionBody = document.getElementById('transactionBody');
+        transactionBody.innerHTML = '';
+
+        transactions.forEach((transaction) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${transaction.id}</td>
+                <td>${transaction.name}</td>
+                <td>${transaction.amount}</td>
+                <td>${transaction.type}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTransaction(${transaction.id})">Delete</button>
+                </td>
+            `;
+            transactionBody.appendChild(row);
+        });
+        updateSummary();
+    };
+
+    const updateSummary = () => {
+        const income = transactions
+            .filter(transaction => transaction.type === 'income')
+            .reduce((acc, transaction) => acc + transaction.amount, 0);
+        const expense = transactions
+            .filter(transaction => transaction.type === 'expense')
+            .reduce((acc, transaction) => acc + transaction.amount, 0);
+        const balance = income - expense;
+
+        document.getElementById('income').textContent = `$${income}`;
+        document.getElementById('expense').textContent = `$${expense}`;
+        document.getElementById('balance').textContent = `$${balance}`;
+    };
+
+    window.deleteTransaction = (id) => {
+        const index = transactions.findIndex(transaction => transaction.id === id);
+        transactions.splice(index, 1);
+        updateTable();
+    };
+
+    const form = document.createElement('form');
+    form.innerHTML = `
+        <div class="mb-3">
+            <input type="text" id="transactionName" class="form-control" placeholder="Transaction Name">
+        </div>
+        <div class="mb-3">
+            <input type="number" id="transactionAmount" class="form-control" placeholder="Transaction Amount">
+        </div>
+        <div class="mb-3">
+            <select id="transactionType" class="form-select">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-success" onclick="addTransaction()">Add Transaction</button>
+    `;
+    app.appendChild(form);
+
+    window.addTransaction = () => {
+        const name = document.getElementById('transactionName').value;
+        const amount = parseInt(document.getElementById('transactionAmount').value, 10);
+        const type = document.getElementById('transactionType').value;
+
+        if (name && !isNaN(amount)) {
+            transactions.push({ id: transactionId++, name, amount, type });
+            updateTable();
+        }
+    };
+
+    const summary = document.createElement('div');
+    summary.innerHTML = `
+        <h2>Income: <span id="income">$0</span></h2>
+        <h2>Expense: <span id="expense">$0</span></h2>
+        <h2>Balance: <span id="balance">$0</span></h2>
+    `;
+    app.insertBefore(summary, transactionTable);
+
+    updateTable();
+});

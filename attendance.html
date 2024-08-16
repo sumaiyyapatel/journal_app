@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Attendance Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Course Attendance Tracker</h1>
+
+        <div class="mb-4">
+            <div class="row">
+                <div class="col">
+                    <input type="text" id="courseName" class="form-control" placeholder="Enter course name">
+                </div>
+                <div class="col">
+                    <input type="number" id="totalLectures" class="form-control" placeholder="Enter total number of lectures">
+                </div>
+                <div class="col">
+                    <button id="addCourseBtn" class="btn btn-primary w-100">Add Course</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="coursesContainer" class="mb-4"></div>
+
+        <button id="visualizeDataBtn" class="btn btn-success">Visualize Data</button>
+
+        <canvas id="attendanceChart" width="500" height="300" class="mt-4"></canvas>
+    </div>
+
+    <script>
+        let courses = [];
+
+        document.getElementById('addCourseBtn').addEventListener('click', () => {
+            const courseName = document.getElementById('courseName').value;
+            const totalLectures = parseInt(document.getElementById('totalLectures').value, 10);
+            
+            if (courseName && totalLectures > 0) {
+                const course = {
+                    name: courseName,
+                    totalLectures: totalLectures,
+                    attendance: new Array(totalLectures).fill(0),
+                };
+                courses.push(course);
+                renderCourses();
+                document.getElementById('courseName').value = '';
+                document.getElementById('totalLectures').value = '';
+            }
+        });
+
+        function renderCourses() {
+            const coursesContainer = document.getElementById('coursesContainer');
+            coursesContainer.innerHTML = '';
+            
+            courses.forEach((course, courseIndex) => {
+                const courseDiv = document.createElement('div');
+                courseDiv.classList.add('mb-3');
+
+                const courseTitle = document.createElement('h5');
+                courseTitle.textContent = course.name;
+                courseDiv.appendChild(courseTitle);
+
+                course.attendance.forEach((att, lectureIndex) => {
+                    const lectureDiv = document.createElement('div');
+                    lectureDiv.classList.add('d-flex', 'align-items-center', 'mb-2');
+
+                    const lectureLabel = document.createElement('span');
+                    lectureLabel.textContent = `Lecture ${lectureIndex + 1}`;
+                    lectureLabel.classList.add('me-2');
+                    lectureDiv.appendChild(lectureLabel);
+
+                    const markAttendanceBtn = document.createElement('button');
+                    markAttendanceBtn.classList.add('btn', att === 1 ? 'btn-success' : 'btn-secondary');
+                    markAttendanceBtn.textContent = 'Mark Attendance';
+                    markAttendanceBtn.addEventListener('click', () => {
+                        courses[courseIndex].attendance[lectureIndex] = 1;
+                        renderCourses();
+                    });
+
+                    lectureDiv.appendChild(markAttendanceBtn);
+                    courseDiv.appendChild(lectureDiv);
+                });
+
+                coursesContainer.appendChild(courseDiv);
+            });
+        }
+
+        document.getElementById('visualizeDataBtn').addEventListener('click', () => {
+            const chartData = courses.map(course => {
+                const attendancePercentage = (course.attendance.filter(att => att === 1).length / course.totalLectures) * 100;
+                return { name: course.name, attendance: attendancePercentage };
+            });
+
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(data => data.name),
+                    datasets: [{
+                        label: 'Attendance Percentage',
+                        data: chartData.map(data => data.attendance),
+                        borderColor: '#4CAF50',
+                        fill: false,
+                    }],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                        },
+                    },
+                },
+            });
+        });
+    </script>
+</body>
+</html>
