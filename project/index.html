@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Student Dashboard</a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="trackers.html">Trackers</a></li>
+            <li class="nav-item"><a class="nav-link" href="todo.html">Todo List</a></li>
+        </ul>
+    </nav>
+
+    <div class="container my-4">
+        <h2 class="mb-4 text-center">Overview Dashboard</h2>
+        <div class="row" id="dashboard-grid">
+            <!-- Grid Layout for Dashboard Widgets -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-dollar-sign"></i> Finance Overview</h5>
+                        <canvas id="financeChart"></canvas>
+                        <small class="text-muted">Track your income, expenses, and savings.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-calendar-check"></i> Attendance Overview</h5>
+                        <canvas id="attendanceChart"></canvas>
+                        <small class="text-muted">Monitor your class attendance.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-heartbeat"></i> Health Overview</h5>
+                        <canvas id="healthChart"></canvas>
+                        <small class="text-muted">Track your exercise, sleep, and nutrition.</small>
+                    </div>
+                </div>
+            </div>
+            <!-- Add more widgets for mood, hobbies, academics, etc. -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/scripts.js"></script>
+    <script src="assets/js/charts.js"></script>
+</body>
+
+</html>
