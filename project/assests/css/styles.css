@@ -1,0 +1,60 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-title i {
+    margin-right: 8px;
+}
+
+/* Finance Tracker Styles */
+#financeForm, #budgetForm {
+    margin-bottom: 20px;
+}
+
+.btn-block {
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+#spendingChart {
+    height: 300px;
+    margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.2rem;
+    }
+}
+/* Attendance Tracker Styles */
+#scheduleForm, #attendanceForm {
+    margin-bottom: 20px;
+}
+
+.btn-block {
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+#attendanceChart {
+    height: 300px;
+    margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.2rem;
+    }
+}
