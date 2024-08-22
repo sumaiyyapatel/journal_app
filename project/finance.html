@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">Student Dashboard</a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="trackers.html">Trackers</a></li>
+            <li class="nav-item"><a class="nav-link" href="todo.html">Todo List</a></li>
+        </ul>
+    </nav>
+
+    <div class="container my-4">
+        <h2 class="mb-4 text-center">Finance Tracker</h2>
+        <div class="row">
+            <!-- Income and Expense Tracking -->
+            <div class="col-lg-6">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-plus-circle text-success"></i> Income & Expense Tracking</h5>
+                        <form id="financeForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="description">Description</label>
+                                    <input type="text" class="form-control" id="description" placeholder="E.g., Salary, Rent">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="amount">Amount</label>
+                                    <input type="number" class="form-control" id="amount" placeholder="Enter amount">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="category">Category</label>
+                                    <select class="form-control" id="category">
+                                        <option value="Income">Income</option>
+                                        <option value="Expense">Expense</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="type">Type</label>
+                                    <select class="form-control" id="type">
+                                        <option value="Credit">Credit (Income)</option>
+                                        <option value="Debit">Debit (Expense)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Add Transaction</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Planning -->
+            <div class="col-lg-6">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-bullseye text-warning"></i> Budget Planning & Savings Goals</h5>
+                        <form id="budgetForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="budgetCategory">Budget Category</label>
+                                    <input type="text" class="form-control" id="budgetCategory" placeholder="E.g., Food, Rent">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="budgetAmount">Planned Amount</label>
+                                    <input type="number" class="form-control" id="budgetAmount" placeholder="Enter budget amount">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-block">Add Budget</button>
+                        </form>
+                        <hr>
+                        <h6 class="text-muted">Savings Goal</h6>
+                        <div class="form-group">
+                            <label for="savingsGoal">Set Savings Goal</label>
+                            <input type="number" class="form-control" id="savingsGoal" placeholder="Enter goal amount">
+                        </div>
+                        <button type="button" class="btn btn-success btn-block">Save Goal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Breakdown Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chart-pie"></i> Visual Breakdown of Spending Categories</h5>
+                        <canvas id="spendingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/finance.js"></script>
+    <script src="assets/js/charts.js"></script>
+</body>
+
+</html>
