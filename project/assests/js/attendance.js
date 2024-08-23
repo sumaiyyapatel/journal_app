@@ -59,16 +59,8 @@ $(document).ready(function () {
         }
     });
 
-    $("#deleteLectureBtn").click(function () {
-        const index = $("#editingIndex").val();
-        if (index) {
-            classes.splice(index, 1);
-            $("#addLectureModal").modal('hide');
-            renderClassesOnCalendar();
-        }
-    });
-
     function renderClassesOnCalendar() {
+        // Clear the calendar slots
         $(".calendar-slot").empty().css('visibility', 'visible').removeAttr('rowspan');
 
         classes.forEach((cls, index) => {
@@ -76,21 +68,22 @@ $(document).ready(function () {
             const rowSpan = cls.hours;
 
             const lectureBlock = $(`
-                <div class="lecture-block badge badge-primary" data-index="${index}" style="cursor: pointer; height: ${rowSpan * 42}px;">
+                <div class="lecture-block badge badge-primary" data-index="${index}" style="cursor: pointer; height: ${rowSpan * 60}px;">
                     ${cls.subject} (${cls.hours} hrs)
+                    <button class="btn btn-danger btn-sm float-right delete-lecture" style="margin-top: -5px; margin-right: -5px;">&times;</button>
                 </div>
             `);
 
             slot.append(lectureBlock).attr('rowspan', rowSpan).css('vertical-align', 'top');
 
-            // Hide merged cells below the main slot
+            // Hide the cells below the main slot but keep them occupying space
             for (let i = 1; i < rowSpan; i++) {
-                $(`.calendar-slot[data-day="${cls.day}"][data-time="${cls.time + i}"]`).css('visibility', 'hidden');
+                $(`.calendar-slot[data-day="${cls.day}"][data-time="${cls.time + i}"]`).addClass('merged-slot');
             }
 
-            // Handle lecture block click for editing or marking attendance
+            // Handle lecture block click for editing
             lectureBlock.click(function (event) {
-                event.stopPropagation(); // Prevent the cell click event
+                event.stopPropagation(); // Prevent triggering the cell click event
 
                 const classIndex = $(this).data('index');
                 $("#lectureSubject").val(classes[classIndex].subject);
@@ -101,7 +94,18 @@ $(document).ready(function () {
 
                 $("#addLectureModal").modal('show');
             });
+
+            // Handle delete lecture button click
+            lectureBlock.find(".delete-lecture").click(function (event) {
+                event.stopPropagation(); // Prevent triggering the lecture block click event
+                deleteLecture(index);
+            });
         });
+    }
+
+    function deleteLecture(index) {
+        classes.splice(index, 1); // Remove the lecture from the classes array
+        renderClassesOnCalendar(); // Re-render the calendar to update the display
     }
 
     function recordAttendance(day, time, classIndex) {
@@ -160,6 +164,7 @@ $(document).ready(function () {
             }
         });
     }
+
 
     // Dummy data for testing
     classes = [
