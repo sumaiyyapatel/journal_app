@@ -31,24 +31,17 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="description">Description</label>
-                                    <input type="text" class="form-control" id="description" placeholder="E.g., Salary, Rent">
+                                    <input type="text" class="form-control" id="description" placeholder="E.g., Salary, Rent" required>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="amount">Amount</label>
-                                    <input type="number" class="form-control" id="amount" placeholder="Enter amount">
+                                    <input type="number" class="form-control" id="amount" placeholder="Enter amount" min="0" required>
                                 </div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="category">Category</label>
-                                    <select class="form-control" id="category">
-                                        <option value="Income">Income</option>
-                                        <option value="Expense">Expense</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label for="type">Type</label>
-                                    <select class="form-control" id="type">
+                                    <select class="form-control" id="type" required>
                                         <option value="Credit">Credit (Income)</option>
                                         <option value="Debit">Debit (Expense)</option>
                                     </select>
@@ -69,11 +62,11 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="budgetCategory">Budget Category</label>
-                                    <input type="text" class="form-control" id="budgetCategory" placeholder="E.g., Food, Rent">
+                                    <input type="text" class="form-control" id="budgetCategory" placeholder="E.g., Food, Rent" required>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="budgetAmount">Planned Amount</label>
-                                    <input type="number" class="form-control" id="budgetAmount" placeholder="Enter budget amount">
+                                    <input type="number" class="form-control" id="budgetAmount" placeholder="Enter budget amount" min="0" required>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-warning btn-block">Add Budget</button>
@@ -82,9 +75,9 @@
                         <h6 class="text-muted">Savings Goal</h6>
                         <div class="form-group">
                             <label for="savingsGoal">Set Savings Goal</label>
-                            <input type="number" class="form-control" id="savingsGoal" placeholder="Enter goal amount">
+                            <input type="number" class="form-control" id="savingsGoal" placeholder="Enter goal amount" min="0" required>
                         </div>
-                        <button type="button" class="btn btn-success btn-block">Save Goal</button>
+                        <button id="saveGoalBtn" type="button" class="btn btn-success btn-block">Save Goal</button>
                     </div>
                 </div>
             </div>
