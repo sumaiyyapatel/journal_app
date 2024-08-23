@@ -1,96 +1,138 @@
 $(document).ready(function () {
     let classes = [];
-    let attendanceRecords = [];
-    let alertThreshold = 75;
+    let attendanceRecords = {};
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-    // Handle Schedule Form Submission
-    $("#scheduleForm").submit(function (e) {
+    renderWeeklyCalendar();
+
+    function renderWeeklyCalendar() {
+        const calendarBody = $("#calendarBody");
+        calendarBody.empty();
+
+        for (let hour = 8; hour <= 18; hour++) {
+            let row = `<tr><td>${hour}:00</td>`;
+            days.forEach((day) => {
+                row += `<td class="calendar-slot droppable" data-day="${day}" data-time="${hour}"></td>`;
+            });
+            row += '</tr>';
+            calendarBody.append(row);
+        }
+
+        renderClassesOnCalendar();
+        bindCalendarCellClicks(); // Bind click event for each calendar cell
+    }
+
+    function bindCalendarCellClicks() {
+        $(".calendar-slot").click(function () {
+            const day = $(this).data('day');
+            const time = $(this).data('time');
+
+            // Pre-fill the modal with the selected day and time
+            $("#selectedDay").val(day);
+            $("#selectedTime").val(time);
+            $("#editingIndex").val(""); // Clear any existing editing index
+
+            $("#addLectureModal").modal('show');
+        });
+    }
+
+    $("#addLectureForm").submit(function (e) {
         e.preventDefault();
-        const subject = $("#subject").val();
-        const day = $("#day").val();
-        const hours = parseFloat($("#hours").val());
+        const subject = $("#lectureSubject").val();
+        const hours = parseFloat($("#lectureHours").val());
+        const day = $("#selectedDay").val();
+        const time = parseInt($("#selectedTime").val());
+        const index = $("#editingIndex").val();
 
-        if (subject && day && hours) {
-            classes.push({ subject, day, hours });
-            alert('Class added successfully!');
-            updateSubjectDropdown();
-            renderWeeklyCalendar();
-            clearScheduleForm();
+        if (subject && hours && day && time) {
+            if (index) {
+                // Edit existing lecture
+                classes[index] = { subject, day, hours, time };
+            } else {
+                // Add new lecture
+                classes.push({ subject, day, hours, time });
+            }
+            $("#addLectureModal").modal('hide');
+            renderClassesOnCalendar();
         } else {
             alert('Please fill in all fields.');
         }
     });
 
-    // Handle Attendance Form Submission
-    $("#attendanceForm").submit(function (e) {
-        e.preventDefault();
-        const subject = $("#attendanceSubject").val();
-        const status = $("#status").val();
-
-        if (subject && status) {
-            attendanceRecords.push({ subject, status });
-            alert('Attendance marked successfully!');
-            updateAttendanceChart();
-            checkAttendanceAlert();
-            clearAttendanceForm();
-        } else {
-            alert('Please select a subject and status.');
+    $("#deleteLectureBtn").click(function () {
+        const index = $("#editingIndex").val();
+        if (index) {
+            classes.splice(index, 1);
+            $("#addLectureModal").modal('hide');
+            renderClassesOnCalendar();
         }
     });
 
-    // Handle Alert Threshold Setting
-    $("#alertThreshold").change(function () {
-        alertThreshold = parseFloat($(this).val());
-        alert('Alert threshold set successfully!');
-        checkAttendanceAlert();
-    });
+    function renderClassesOnCalendar() {
+        $(".calendar-slot").empty().css('visibility', 'visible').removeAttr('rowspan');
 
-    // Update Subject Dropdown
-    function updateSubjectDropdown() {
-        const dropdown = $("#attendanceSubject");
-        dropdown.empty();
-        classes.forEach((cls) => {
-            dropdown.append(`<option value="${cls.subject}">${cls.subject}</option>`);
+        classes.forEach((cls, index) => {
+            const slot = $(`.calendar-slot[data-day="${cls.day}"][data-time="${cls.time}"]`);
+            const rowSpan = cls.hours;
+
+            const lectureBlock = $(`
+                <div class="lecture-block badge badge-primary" data-index="${index}" style="cursor: pointer; height: ${rowSpan * 42}px;">
+                    ${cls.subject} (${cls.hours} hrs)
+                </div>
+            `);
+
+            slot.append(lectureBlock).attr('rowspan', rowSpan).css('vertical-align', 'top');
+
+            // Hide merged cells below the main slot
+            for (let i = 1; i < rowSpan; i++) {
+                $(`.calendar-slot[data-day="${cls.day}"][data-time="${cls.time + i}"]`).css('visibility', 'hidden');
+            }
+
+            // Handle lecture block click for editing or marking attendance
+            lectureBlock.click(function (event) {
+                event.stopPropagation(); // Prevent the cell click event
+
+                const classIndex = $(this).data('index');
+                $("#lectureSubject").val(classes[classIndex].subject);
+                $("#lectureHours").val(classes[classIndex].hours);
+                $("#selectedDay").val(classes[classIndex].day);
+                $("#selectedTime").val(classes[classIndex].time);
+                $("#editingIndex").val(classIndex);
+
+                $("#addLectureModal").modal('show');
+            });
         });
     }
 
-    // Render Weekly Calendar
-    function renderWeeklyCalendar() {
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-        const calendarBody = $("#calendarBody");
-        calendarBody.empty();
+    function recordAttendance(day, time, classIndex) {
+        const cls = classes[classIndex];
+        const attendanceKey = `${cls.subject}_${day}_${time}`;
+        let attendanceStatus = attendanceRecords[attendanceKey] || 'Absent';
 
-        for (let hour = 8; hour <= 18; hour++) { // Assuming classes run from 8 AM to 6 PM
-            let row = `<tr><td>${hour}:00</td>`;
-            days.forEach((day) => {
-                const classInSlot = classes.find((cls) => cls.day === day && cls.hours === hour);
-                row += `<td>${classInSlot ? classInSlot.subject : ''}</td>`;
-            });
-            row += '</tr>';
-            calendarBody.append(row);
+        attendanceStatus = attendanceStatus === 'Present' ? 'Absent' : 'Present';
+        attendanceRecords[attendanceKey] = attendanceStatus;
+
+        updateAttendanceVisualization(classIndex, day, time, attendanceStatus);
+        updateAttendanceChart();
+    }
+
+    function updateAttendanceVisualization(classIndex, day, time, attendanceStatus) {
+        const slot = $(`.calendar-slot[data-day="${day}"][data-time="${time}"]`);
+        const lectureBlock = slot.find(`[data-index="${classIndex}"]`);
+
+        if (attendanceStatus === 'Present') {
+            lectureBlock.removeClass('badge-primary').addClass('badge-success');
+        } else {
+            lectureBlock.removeClass('badge-success').addClass('badge-primary');
         }
     }
 
-    // Clear Schedule Form
-    function clearScheduleForm() {
-        $("#subject").val('');
-        $("#day").val('Monday');
-        $("#hours").val('');
-    }
-
-    // Clear Attendance Form
-    function clearAttendanceForm() {
-        $("#attendanceSubject").val('');
-        $("#status").val('Present');
-    }
-
-    // Update Attendance Chart
     function updateAttendanceChart() {
         const attendanceData = {};
 
         classes.forEach((cls) => {
-            const totalClasses = attendanceRecords.filter((rec) => rec.subject === cls.subject).length;
-            const presentClasses = attendanceRecords.filter((rec) => rec.subject === cls.subject && rec.status === 'Present').length;
+            const totalClasses = days.reduce((count, day) => count + (attendanceRecords[`${cls.subject}_${day}_${cls.time}`] ? 1 : 0), 0);
+            const presentClasses = days.reduce((count, day) => count + (attendanceRecords[`${cls.subject}_${day}_${cls.time}`] === 'Present' ? 1 : 0), 0);
             const attendancePercentage = (presentClasses / totalClasses) * 100 || 0;
             attendanceData[cls.subject] = attendancePercentage.toFixed(2);
         });
@@ -119,82 +161,12 @@ $(document).ready(function () {
         });
     }
 
-    // Check Attendance Alert
-    function checkAttendanceAlert() {
-        classes.forEach((cls) => {
-            const totalClasses = attendanceRecords.filter((rec) => rec.subject === cls.subject).length;
-            const presentClasses = attendanceRecords.filter((rec) => rec.subject === cls.subject && rec.status === 'Present').length;
-            const attendancePercentage = (presentClasses / totalClasses) * 100 || 0;
+    // Dummy data for testing
+    classes = [
+        { subject: "Math", day: "Monday", hours: 2, time: 9 },
+        { subject: "Physics", day: "Wednesday", hours: 3, time: 11 },
+        { subject: "Chemistry", day: "Friday", hours: 1, time: 14 }
+    ];
 
-            if (attendancePercentage < alertThreshold) {
-                alert(`Warning: Your attendance for ${cls.subject} is below ${alertThreshold}%`);
-            }
-        });
-    }
-});
-$(document).ready(function () {
-    let classes = [];
-    let attendanceRecords = [];
-    let alertThreshold = 75;
-
-    // Initialize Calendar
-    renderWeeklyCalendar();
-
-    // Render Weekly Calendar
-    function renderWeeklyCalendar() {
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-        const calendarBody = $("#calendarBody");
-        calendarBody.empty();
-
-        for (let hour = 8; hour <= 18; hour++) { // Assuming classes run from 8 AM to 6 PM
-            let row = `<tr><td>${hour}:00</td>`;
-            days.forEach((day) => {
-                row += `<td class="calendar-slot" data-day="${day}" data-time="${hour}"></td>`;
-            });
-            row += '</tr>';
-            calendarBody.append(row);
-        }
-
-        // Make calendar slots clickable
-        $(".calendar-slot").click(function () {
-            const day = $(this).data('day');
-            const time = $(this).data('time');
-            $("#selectedDay").val(day);
-            $("#selectedTime").val(time);
-            $("#addLectureModal").modal('show');
-        });
-    }
-
-    // Handle Add Lecture Form Submission
-    $("#addLectureForm").submit(function (e) {
-        e.preventDefault();
-        const subject = $("#lectureSubject").val();
-        const hours = parseFloat($("#lectureHours").val());
-        const day = $("#selectedDay").val();
-        const time = $("#selectedTime").val();
-
-        if (subject && hours && day && time) {
-            classes.push({ subject, day, hours, time });
-            $("#addLectureModal").modal('hide');
-            renderClassesOnCalendar();
-        } else {
-            alert('Please fill in all fields.');
-        }
-    });
-
-    // Render Classes on Calendar
-    function renderClassesOnCalendar() {
-        $(".calendar-slot").empty(); // Clear all slots
-
-        classes.forEach((cls) => {
-            const slot = $(`.calendar-slot[data-day="${cls.day}"][data-time="${cls.time}"]`);
-            slot.html(`<span class="badge badge-primary">${cls.subject} (${cls.hours} hrs)</span>`);
-        });
-    }
-
-    // Handle Attendance and Alerts (Existing functionality remains unchanged)
-    // ...
-
-    // Render Weekly Calendar initially
-    renderWeeklyCalendar();
+    renderClassesOnCalendar();
 });
