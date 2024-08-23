@@ -49,71 +49,38 @@
                 </div>
             </div>
         </div>
-
-        <!-- Add Lecture Modal -->
-        <div class="modal fade" id="addLectureModal" tabindex="-1" role="dialog" aria-labelledby="addLectureModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addLectureModalLabel">Add Lecture</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="addLectureForm">
-                            <div class="form-group">
-                                <label for="lectureSubject">Subject</label>
-                                <input type="text" class="form-control" id="lectureSubject" placeholder="E.g., Math, Physics">
-                            </div>
-                            <div class="form-group">
-                                <label for="lectureHours">Hours</label>
-                                <input type="number" class="form-control" id="lectureHours" placeholder="Enter lecture hours">
-                            </div>
-                            <input type="hidden" id="selectedDay">
-                            <input type="hidden" id="selectedTime">
-                            <button type="submit" class="btn btn-primary btn-block">Add Lecture</button>
-                        </form>
-                    </div>
-                </div>
+<!-- Add Lecture Modal -->
+<div class="modal fade" id="addLectureModal" tabindex="-1" role="dialog" aria-labelledby="addLectureModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLectureModalLabel">Add/Edit Lecture</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-
-        <!-- Attendance Record & Alerts -->
-<div class="col-lg-6">
-    <div class="card shadow-lg mb-4">
-        <div class="card-body">
-            <h5 class="card-title"><i class="fas fa-clipboard-check text-success"></i> Attendance Record & Alerts</h5>
-            <form id="attendanceForm">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="attendanceSubject">Subject</label>
-                        <select class="form-control" id="attendanceSubject">
-                            <!-- Subjects will be dynamically populated here -->
-                        </select>
+            <form id="addLectureForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="lectureSubject">Subject</label>
+                        <input type="text" class="form-control" id="lectureSubject" required>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="status">Status</label>
-                        <select class="form-control" id="status">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                        </select>
+                    <div class="form-group">
+                        <label for="lectureHours">Duration (hours)</label>
+                        <input type="number" class="form-control" id="lectureHours" min="1" required>
                     </div>
+                    <input type="hidden" id="selectedDay">
+                    <input type="hidden" id="selectedTime">
+                    <input type="hidden" id="editingIndex">
                 </div>
-                <button type="submit" class="btn btn-success btn-block">Mark Attendance</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Lecture</button>
+                </div>
             </form>
-            <hr>
-            <h6 class="text-muted">Set Attendance Alert Threshold</h6>
-            <div class="form-group">
-                <label for="alertThreshold">Alert when attendance is below (%)</label>
-                <input type="number" class="form-control" id="alertThreshold" placeholder="Enter percentage">
-            </div>
-            <button type="button" class="btn btn-warning btn-block">Set Alert</button>
         </div>
     </div>
 </div>
-</div>
-
         <!-- Attendance Visualization Section -->
         <div class="row">
             <div class="col-lg-12">
@@ -135,20 +102,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
