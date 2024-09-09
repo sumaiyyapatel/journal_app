@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hobbies Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">Student Dashboard</a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="trackers.html">Trackers</a></li>
+            <li class="nav-item"><a class="nav-link" href="todo.html">Todo List</a></li>
+        </ul>
+    </nav>
+
+    <div class="container my-4">
+        <h2 class="mb-4 text-center">Hobbies Tracker</h2>
+
+        <!-- Hobbies List and Tracking Section -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-list text-primary"></i> Current Hobbies</h5>
+                        <form id="hobbyForm">
+                            <div class="form-group">
+                                <label for="hobbyName">Hobby Name</label>
+                                <input type="text" class="form-control" id="hobbyName" placeholder="E.g., Painting, Coding">
+                            </div>
+                            <div class="form-group">
+                                <label for="hobbyTime">Time Spent (hours)</label>
+                                <input type="number" class="form-control" id="hobbyTime" placeholder="Enter hours spent">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Add Hobby</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chart-line text-success"></i> Time Spent on Hobbies</h5>
+                        <canvas id="hobbyProgressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goal Setting Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-bullseye text-warning"></i> Set Goals for Your Hobbies</h5>
+                        <form id="goalForm">
+                            <div class="form-group">
+                                <label for="goalHobby">Select Hobby</label>
+                                <select class="form-control" id="goalHobby">
+                                    <!-- Hobbies will be dynamically populated here -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="goalTargetHours">Target Hours Per Week</label>
+                                <input type="number" class="form-control" id="goalTargetHours" placeholder="Enter target hours">
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-block">Set Goal</button>
+                        </form>
+                        <ul id="goalList" class="list-group mt-4">
+                            <!-- Goals will be dynamically listed here with a quit button -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/hobbies.js"></script>
+    <script src="assets/js/charts.js"></script>
+</body>
+
+</html>
